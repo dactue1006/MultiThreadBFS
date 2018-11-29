@@ -17,24 +17,28 @@ public class ThreadBFS implements Runnable{
 	
 	public void run() {
         long startTime = System.currentTimeMillis();
-
-		System.out.println("Thread " + index + " run");
-		Graph graph = Main.getGraph();
-		Queue<Integer> q = Main.getQ();
-		int[] trace = Main.getTrace();
-		int[][] matrix = graph.getMatrix();
-
-		for (int nextVertex = start; nextVertex < end; nextVertex++) {
-			if (matrix[currentVertex][nextVertex]!=0 && trace[nextVertex]==-1) {
-				q.add(nextVertex);
-				trace[nextVertex] = currentVertex;
-				System.out.println(nextVertex);
+        try {
+			System.out.println("Thread " + index + " start");
+			Graph graph = Main.getGraph();
+			Queue<Integer> q = Main.getQ();
+			int[] trace = Main.getTrace();
+			int[][] matrix = graph.getMatrix();
+	
+			for (int nextVertex = start; nextVertex < end; nextVertex++) {
+				if (matrix[currentVertex][nextVertex]!=0 && trace[nextVertex]==-1) {
+					q.add(nextVertex);
+					trace[nextVertex] = currentVertex;
+					System.out.println("thread " + index + " " + nextVertex);
+				}
 			}
-		}
-		Main.setQ(q);
-		Main.setTrace(trace);
-        long endTime = System.currentTimeMillis();
-        System.out.println(endTime-startTime + "ms");
+			Main.setQ(q);
+			Main.setTrace(trace);
+	        long endTime = System.currentTimeMillis();
+	        System.out.println("thread " + index + " exitting");
+	        System.out.println(endTime-startTime + "ms");
+        } catch(Exception e) {
+        	
+        }
 
 	}
 

@@ -1,16 +1,15 @@
 package bfs;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-
+import java.util.*;
 
 public class Main {
 	private final static String path = System.getProperty("user.dir") + "//src//bfs//test";
 	private static Graph graph;
 	private static int[] trace;
 	private static Queue<Integer> q;
+	private static List<Thread> arrThread;
+	private static int numThreads = 1;
 	
 	public static Graph getGraph() {
 		return graph;
@@ -85,18 +84,21 @@ public class Main {
 		while (!q.isEmpty()) {
 			int currentVertex = q.remove();
 			System.out.println(q);
-			Thread thread1 = new Thread(new ThreadBFS(1, 0, graph.getN()/2, currentVertex));
-			thread1.start();
-			Thread thread2 = new Thread(new ThreadBFS(2, graph.getN()/2, graph.getN(), currentVertex));
-			thread2.start();
-			thread1.join();
-			thread2.join();
-/*			for (int nextVertex = 0; nextVertex < graph.getN(); nextVertex++) {
-				if (matrix[currentVertex][nextVertex]!=0 && trace[nextVertex]==-1) {
-					q.add(nextVertex);
-					trace[nextVertex] = currentVertex;
-				}
-			}*/
+			arrThread = new ArrayList<>();
+			for (int i = 0; i < numThreads; i++) {
+				Thread thread = 
+					new Thread(
+						new ThreadBFS(
+								i+1, 
+								graph.getN()*i/numThreads, 
+								graph.getN()*(i+1)/numThreads, currentVertex));
+				arrThread.add(thread);
+				thread.start();
+			}
+			
+			for (int i = 0; i < numThreads; i++) {
+				arrThread.get(i).join();
+			}
 		}
         long end = System.currentTimeMillis();
         System.out.println(end - start + "ms");
@@ -121,17 +123,23 @@ public class Main {
 			System.out.println(graph.getFirst());
 		}
 	}
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
+	
+	public static void inputNumThread() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter number of thread (must be less than number of vertex): ");
+		int num = sc.nextInt();	
+		numThreads = num > graph.getN() ? graph.getN() : num;
+	}
+	
+	public static void main(String[] args) throws IOException, InterruptedException {
+		System.out.println("Main thread start");
 		readFile();
-		try {
-			BFS();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inputNumThread();
+		BFS();
 		printPath();
 		graph.printMatrix();
+		System.out.println("Main thread exitting");
+
 	}
 
 }
