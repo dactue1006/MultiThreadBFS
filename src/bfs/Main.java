@@ -2,6 +2,8 @@ package bfs;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
+
 
 public class Main {
 	private final static String path = System.getProperty("user.dir") + "//src//bfs//test";
@@ -72,15 +74,34 @@ public class Main {
 			br.close();
 		}
 	}
-
-	public static void BFS() throws InterruptedException {
-        long start = System.currentTimeMillis();
+	public static void initBFS() {
 		trace = new int[graph.getN()];
 		Arrays.fill(trace, -1);
 		q = new LinkedList<>();
 		q.add(graph.getFirst()-1);
 		trace[graph.getFirst()-1] = -2;
+	}
+
+	public static void singleBFS() throws InterruptedException {
+		long start = System.nanoTime();
 		int[][] matrix = graph.getMatrix();
+		while (!q.isEmpty()) {
+			int currentVertex = q.remove();
+			System.out.println(q);
+			for (int nextVertex = 0; nextVertex < graph.getN(); nextVertex++) {
+				if (matrix[currentVertex][nextVertex]!=0 && trace[nextVertex]==-1) {
+					q.add(nextVertex);
+					trace[nextVertex] = currentVertex;
+				}
+			}
+		}
+		
+        long end = System.nanoTime();
+        System.out.println((end - start)/1e6 + "ms");
+        
+	}
+	public static void multithreadBFS() throws InterruptedException {
+        long start = System.nanoTime();
 		while (!q.isEmpty()) {
 			int currentVertex = q.remove();
 			System.out.println(q);
@@ -100,8 +121,9 @@ public class Main {
 				arrThread.get(i).join();
 			}
 		}
-        long end = System.currentTimeMillis();
-        System.out.println(end - start + "ms");
+        long end = System.nanoTime();
+        System.out.println((end - start)/1e6 + "ms");
+
 
 	}
 	
@@ -134,8 +156,17 @@ public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		System.out.println("Main thread start");
 		readFile();
-		inputNumThread();
-		BFS();
+		initBFS();
+		Scanner sc = new Scanner(System.in);
+		System.out.println("do you want single thread or multithread?");
+		System.out.println("Enter 1 if single thread and other if multithread");
+		int num = sc.nextInt();	
+		if (num == 1) {
+			singleBFS();
+		}else {
+			inputNumThread();
+			multithreadBFS();
+		}
 		printPath();
 		graph.printMatrix();
 		System.out.println("Main thread exitting");

@@ -16,7 +16,7 @@ public class ThreadBFS implements Runnable{
 	}
 	
 	public void run() {
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         try {
 			System.out.println("Thread " + index + " start");
 			Graph graph = Main.getGraph();
@@ -33,9 +33,9 @@ public class ThreadBFS implements Runnable{
 			}
 			Main.setQ(q);
 			Main.setTrace(trace);
-	        long endTime = System.currentTimeMillis();
+	        long endTime = System.nanoTime();
 	        System.out.println("thread " + index + " exitting");
-	        System.out.println(endTime-startTime + "ms");
+	        System.out.println((endTime-startTime)/1e6 + "ms");
         } catch(Exception e) {
         	
         }
